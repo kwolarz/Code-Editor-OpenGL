@@ -8,9 +8,22 @@ characters.append([])
 
 w,h= 800, 600
 row = 0
+column = 0
+
+def arrowHandler(key, x, y):
+    if key == GLUT_KEY_UP:
+        print('góra')
+    elif key == GLUT_KEY_DOWN:
+        print('dół')
+    elif key == GLUT_KEY_LEFT:
+        print('lewo')
+    elif key == GLUT_KEY_RIGHT:
+        print('prawo')
+
+    return None
 
 def handler(key, x, y):
-    global row
+    global row, column
     print(characters)
     if key == b'\x7f':
         characters[row].pop()
@@ -64,4 +77,5 @@ wind = glutCreateWindow("OpenGL Coding Practice")
 glutDisplayFunc(showScreen)
 glutIdleFunc(showScreen)
 glutKeyboardFunc(handler)
+glutSpecialFunc(arrowHandler)
 glutMainLoop()
