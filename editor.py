@@ -50,9 +50,9 @@ def showScreen():
                 glut_print(20 + 10*pos, h - (15 * (charRow + 0)), GLUT_BITMAP_9_BY_15, char, 0.1 , 0.1 , 1.0)
                 
             else:
-                glut_print(20 + 10*pos, h - (15 * (charRow)), GLUT_BITMAP_9_BY_15, char, 1.0 , 1.0 , 1.0)
+                glut_print(20 + 10*pos, (h - 15) - (15 * (charRow)), GLUT_BITMAP_9_BY_15, char, 1.0 , 1.0 , 1.0)
 
-    glut_print(20 + 10*len(characters[row]), h - (15 * (row)), GLUT_BITMAP_HELVETICA_18, "|", 0.5 , 0.5 , 0.5)
+    glut_print(20 + 10*len(characters[row]), (h - 15) - (15 * (row)), GLUT_BITMAP_HELVETICA_18, "|", 0.5 , 0.5 , 0.5)
 
     glutSwapBuffers()
 
