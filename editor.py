@@ -2,40 +2,95 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
+# głowna lista odpowiadająca za ilość wierszy w edytorze
 characters = []
 characters.append([])
 
-
+# zmienne odpowaidające za szerokość i wysokość okna
 w,h= 800, 600
+
+# aktualna liczba wierszy edytora
 row = 0
+
+# aktualna liczba kolumn w danym wierszu edytora
 column = 0
 
+# pozycja kursora - wiersze
+coursorRow = row
+
+# pozycja kursora - kolumny
+coursorColumn = column
+
+# metoda odpoiwadająca za zamianę listy char'ów w jeden string
+def listToString(listOfChar):
+    word = ''
+    for w in listOfChar:
+        word += w
+
+    return word
+
+
+# metoda odpowiadająca za znajdowanie słów kluczowych w danym stringu
+def checkIfSyntax(text):
+    keywords = ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield']
+    startOfKeyword = None
+    for keyword in keywords:
+        startOfKeyword = text.find(keyword)
+        if keyword in text:
+            print(startOfKeyword)
+
+
+# metoda odpowaidająca za obsługę klawiszy kierunkowych na klawiaturze
 def arrowHandler(key, x, y):
+    global coursorRow, row, coursorColumn
+    # coursorRow = row
     if key == GLUT_KEY_UP:
-        print('góra')
+        if coursorRow > 0:
+            coursorRow -= 1
+            print('góra')
     elif key == GLUT_KEY_DOWN:
+        if row > coursorRow:
+            coursorRow += 1
         print('dół')
     elif key == GLUT_KEY_LEFT:
+        if coursorColumn > 0:
+            coursorColumn -= 1
         print('lewo')
     elif key == GLUT_KEY_RIGHT:
+        if len(characters[coursorRow]) > coursorColumn:
+            coursorColumn += 1
         print('prawo')
 
+    print('row = ', row, 'coursor = ', coursorRow)
+    checkIfSyntax(listToString(characters[coursorRow]))
     return None
 
+
+# metoda odpowiadająca za obsługę klawiatury
 def handler(key, x, y):
-    global row, column
+    global row, column, coursorRow
     print(characters)
     if key == b'\x7f':
-        characters[row].pop()
+        characters[coursorRow].pop()
         print(characters)
     elif key==b'\r':
+        coursorRow += 1
         row += 1
         characters.append([])
-        
+    elif key == b'\t':
+        for _ in range(4):
+            characters[coursorRow].append('')
+
+    elif key == b'\x13':
+        saveFile()
+    elif key == b'\x0f':
+        openFile()
     else:
-        characters[row].append(key.decode('UTF-8'))
+        characters[coursorRow].append(key.decode('UTF-8'))
     return None
 
+
+# metoda odpowaidająca za rysowanie tekstu w oknie edytora
 def glut_print(x, y, font, text, r, g, b):
     blending = False 
     if glIsEnabled(GL_BLEND):
@@ -50,22 +105,23 @@ def glut_print(x, y, font, text, r, g, b):
     if not blending :
         glDisable(GL_BLEND) 
 
+
+# metoda odpowiadająca za rysowanie elemntów w oknie edytora
 def showScreen():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
 
+    # rysowanie numeru wiersza
     for i in range(row + 1):
         glut_print(5, (h-15) - (15 * i), GLUT_BITMAP_HELVETICA_10, str(i), 0.1 , 0.3 , 1.0)
 
+    # rysowanie znaków na bazie listy
     for charRow in range(row+1):
         for pos, char in enumerate(characters[charRow]):
-            if characters[charRow][pos-1] == 'i' and characters[charRow][pos] == 'f':
-                glut_print(20 + 10*pos, h - (15 * (charRow + 0)), GLUT_BITMAP_9_BY_15, char, 0.1 , 0.1 , 1.0)
-                
-            else:
-                glut_print(20 + 10*pos, (h - 15) - (15 * (charRow)), GLUT_BITMAP_9_BY_15, char, 1.0 , 1.0 , 1.0)
+            glut_print(20 + 10*pos, (h - 15) - (15 * (charRow)), GLUT_BITMAP_9_BY_15, char, 1.0 , 1.0 , 1.0)
 
-    glut_print(20 + 10*len(characters[row]), (h - 15) - (15 * (row)), GLUT_BITMAP_HELVETICA_18, "|", 0.5 , 0.5 , 0.5)
+    # rysowanie kursora
+    glut_print(20 + 10*len(characters[coursorRow]), (h - 15) - (15 * (coursorRow)), GLUT_BITMAP_HELVETICA_18, "|", 0.5 , 0.5 , 0.5)
 
     glutSwapBuffers()
 
