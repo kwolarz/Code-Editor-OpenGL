@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+import time
 
 
 # głowna lista odpowiadająca za ilość wierszy w edytorze
@@ -186,27 +187,36 @@ def glut_print(x, y, font, text, r, g, b):
         glDisable(GL_BLEND) 
 
 
+index = 0
 # metoda odpowiadająca za rysowanie elemntów w oknie edytora
 def showScreen():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
+    global index
+    index += 1
 
     # rysowanie numeru wiersza
     for i in range(row + 1):
-        glut_print(5, (h-15) - (15 * i), GLUT_BITMAP_HELVETICA_10, str(i), 0.99 , 0.9 , 0.05)
+        glut_print(10, (h-15) - (15 * i), GLUT_BITMAP_HELVETICA_10, str(i), 0.99 , 0.9 , 0.05)
 
     # rysowanie znaków na bazie listy
     for charRow in range(row+1):
         for pos, char in enumerate(characters[charRow]):
             
             if pos in keywordPositions[charRow]:
-                glut_print(20 + 10*pos, (h - 15) - (15 * (charRow)), GLUT_BITMAP_9_BY_15, char, 0, 0.7, 0.95)
+                glut_print(33 + 10*pos, (h - 15) - (15 * (charRow)), GLUT_BITMAP_9_BY_15, char, 0, 0.7, 0.95)
             else:
-                glut_print(20 + 10*pos, (h - 15) - (15 * (charRow)), GLUT_BITMAP_9_BY_15, char, 1.0 , 1.0 , 1.0)
+                glut_print(33 + 10*pos, (h - 15) - (15 * (charRow)), GLUT_BITMAP_9_BY_15, char, 1.0 , 1.0 , 1.0)
 
     # rysowanie kursora
     # glut_print(20 + 10*len(characters[coursorRow]), (h - 15) - (15 * (coursorRow)), GLUT_BITMAP_HELVETICA_18, "|", 0.5 , 0.5 , 0.5)
-    glut_print(20 + 10*coursorColumn, (h - 15) - (15 * (coursorRow)), GLUT_BITMAP_HELVETICA_18, "|", 0.99 , 0.9 , 0.05)
+    if index > 0 and index < 40:
+        glut_print(33 + 10*coursorColumn, (h - 15) - (15 * (coursorRow)), GLUT_BITMAP_HELVETICA_18, "|", 0 , 0 , 0)
+    
+    elif index == 80:
+        index = 0
+    else:
+        glut_print(33 + 10*coursorColumn, (h - 15) - (15 * (coursorRow)), GLUT_BITMAP_HELVETICA_18, "|", 0.99 , 0.9 , 0.05)
 
     glutSwapBuffers()
 
