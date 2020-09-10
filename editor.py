@@ -21,6 +21,13 @@ coursorRow = row
 # pozycja kursora - kolumny
 coursorColumn = column
 
+def saveFile():
+    print('saved')
+
+
+def openFile():
+    print('opened')
+
 # metoda odpoiwadająca za zamianę listy char'ów w jeden string
 def listToString(listOfChar):
     word = ''
