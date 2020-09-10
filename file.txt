@@ -1,0 +1,40 @@
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+
+
+# głowna lista odpowiadająca za ilość wierszy w edytorze
+characters = []
+characters.append([])
+
+keywordPositions = []
+keywordPositions.append([])
+
+# zmienne odpowaidające za szerokość i wysokość okna
+w,h= 800, 600
+
+# aktualna liczba wierszy edytora
+row = 0
+
+# aktualna liczba kolumn w danym wierszu edytora
+column = 0
+
+# pozycja kursora - wiersze
+coursorRow = row
+
+# pozycja kursora - kolumny
+coursorColumn = column
+
+def saveFile():
+    print('saved')
+
+
+def openFile():
+    characters.clear()
+    with open('file.txt', 'r') as file:
+        for line in file:
+            characters.append(list(line))
+
+
+
+    print('opened')
