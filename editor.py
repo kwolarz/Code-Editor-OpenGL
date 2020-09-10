@@ -1,10 +1,19 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+from dataclasses import dataclass
+
+
+@dataclass
+class Keyword:
+    startOfKeyword: int
+    endOfKeyword: int
 
 # głowna lista odpowiadająca za ilość wierszy w edytorze
 characters = []
 characters.append([])
+
+keywordPositions = []
 
 # zmienne odpowaidające za szerokość i wysokość okna
 w,h= 800, 600
@@ -28,6 +37,7 @@ def saveFile():
 def openFile():
     print('opened')
 
+
 # metoda odpoiwadająca za zamianę listy char'ów w jeden string
 def listToString(listOfChar):
     word = ''
@@ -38,13 +48,15 @@ def listToString(listOfChar):
 
 
 # metoda odpowiadająca za znajdowanie słów kluczowych w danym stringu
-def checkIfSyntax(text):
+def checkIfSyntax(text, row):
     keywords = ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield']
     startOfKeyword = None
     for keyword in keywords:
         startOfKeyword = text.find(keyword)
         if keyword in text:
-            print(startOfKeyword)
+            endOfKeyword = len(keyword) + startOfKeyword - 1
+
+            print(startOfKeyword, ' ', endOfKeyword)
 
 
 # metoda odpowaidająca za obsługę klawiszy kierunkowych na klawiaturze
@@ -69,14 +81,14 @@ def arrowHandler(key, x, y):
         print('prawo')
 
     print('row = ', row, 'coursor = ', coursorRow)
-    checkIfSyntax(listToString(characters[coursorRow]))
+    
     return None
 
 
 # metoda odpowiadająca za obsługę klawiatury
 def handler(key, x, y):
     global row, column, coursorRow
-    print(characters)
+    
     if key == b'\x7f':
         characters[coursorRow].pop()
         print(characters)
@@ -94,6 +106,9 @@ def handler(key, x, y):
         openFile()
     else:
         characters[coursorRow].append(key.decode('UTF-8'))
+
+    print(characters)
+    checkIfSyntax(listToString(characters[coursorRow]), row)    
     return None
 
 
@@ -132,13 +147,17 @@ def showScreen():
 
     glutSwapBuffers()
 
-glutInit()
-glutInitDisplayMode(GLUT_RGBA)
-glutInitWindowSize(w, h)
-glutInitWindowPosition(0, 0)
-wind = glutCreateWindow("OpenGL Coding Practice")
-glutDisplayFunc(showScreen)
-glutIdleFunc(showScreen)
-glutKeyboardFunc(handler)
-glutSpecialFunc(arrowHandler)
-glutMainLoop()
+def main():
+    glutInit()
+    glutInitDisplayMode(GLUT_RGBA)
+    glutInitWindowSize(w, h)
+    glutInitWindowPosition(0, 0)
+    wind = glutCreateWindow("OpenGL Code Editor")
+    glutDisplayFunc(showScreen)
+    glutIdleFunc(showScreen)
+    glutKeyboardFunc(handler)
+    glutSpecialFunc(arrowHandler)
+    glutMainLoop()
+
+if __name__ == "__main__":
+    main()
