@@ -126,15 +126,12 @@ def arrowHandler(key, x, y):
 def handler(key, x, y):
     global row, column, coursorRow, coursorColumn
     
-    checkIfSyntax(listToString(characters[coursorRow]), row)
-    specialCharSyntax(listToString(characters[coursorRow]), row) 
 
     if key == b'\x7f':
         if coursorColumn > 0:
             coursorColumn -= 1 
         if len(characters[coursorRow]) == 0:
             if row > 0:
-                
                 characters.pop(coursorRow)
                 keywordPositions.pop(coursorRow)
                 row -= 1
@@ -142,8 +139,8 @@ def handler(key, x, y):
                 coursorColumn = len(characters[coursorRow])
                 
         else:
-            characters[coursorRow].pop()
-            keywordPositions[coursorRow].pop()
+            characters[coursorRow].pop(coursorColumn)
+            keywordPositions[coursorRow].pop(coursorColumn)
 
     elif key==b'\r':
         coursorRow += 1
@@ -166,7 +163,10 @@ def handler(key, x, y):
         coursorColumn += 1
 
     print(characters)
-    # checkIfSyntax(listToString(characters[coursorRow]), row)    
+
+    checkIfSyntax(listToString(characters[coursorRow]), row)
+    specialCharSyntax(listToString(characters[coursorRow]), row)  
+
     return None
 
 
