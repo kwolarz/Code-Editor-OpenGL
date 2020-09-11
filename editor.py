@@ -1,7 +1,6 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
-import time
 
 
 # głowna lista odpowiadająca za ilość wierszy w edytorze
@@ -27,6 +26,15 @@ coursorRow = row
 coursorColumn = column
 
 def saveFile():
+    global row
+    file = open('file.txt', 'w+')
+    for r in range(row + 1):
+        if r == row:
+            file.write(listToString(characters[r]))
+        else:
+            file.write(listToString(characters[r]) + '\n')
+
+    file.close()
     print('saved')
 
 
@@ -44,6 +52,7 @@ def openFile():
             checkIfSyntax(listToString(characters[i]), i)
             specialCharSyntax(listToString(characters[i]), i) 
             row = i
+        file.close()
 
 
 # metoda odpoiwadająca za zamianę listy char'ów w jeden string
@@ -77,7 +86,7 @@ def checkIfSyntax(text, row):
                 if i not in keywordPositions[row]:
                     keywordPositions[row].append(i)
 
-            print(keywordPositions[row])
+            
 
 def specialCharSyntax(text, row):
     keywords = [':', ';', '"', "'", '[', ']', '{', '}', '(', ')', '=']
@@ -87,36 +96,36 @@ def specialCharSyntax(text, row):
 
         keywordPositions[row].extend(positions)
 
-        print(keywordPositions[row])
 
 
 # metoda odpowaidająca za obsługę klawiszy kierunkowych na klawiaturze
 def arrowHandler(key, x, y):
-    global coursorRow, row, coursorColumn
+    global coursorRow, row, coursorColumn, h
     
     if key == GLUT_KEY_UP:
         if coursorRow > 0:
             coursorRow -= 1
             if coursorColumn > len(characters[coursorRow]):
                 coursorColumn = len(characters[coursorRow])
-            print('góra')
 
     elif key == GLUT_KEY_DOWN:
         if row > coursorRow:
+            if row > 38:
+                if coursorRow == row - 1:
+                    h += 15
+
             coursorRow += 1
             if coursorColumn > len(characters[coursorRow]):
                 coursorColumn = len(characters[coursorRow])
-        print('dół')
+
 
     elif key == GLUT_KEY_LEFT:
         if coursorColumn > 0:
             coursorColumn -= 1
-        print('lewo')
 
     elif key == GLUT_KEY_RIGHT:
         if len(characters[coursorRow]) > coursorColumn:
             coursorColumn += 1
-        print('prawo')
 
     print('row = ', row, 'coursor = ', coursorRow)
     
@@ -125,7 +134,7 @@ def arrowHandler(key, x, y):
 
 # metoda odpowiadająca za obsługę klawiatury
 def handler(key, x, y):
-    global row, column, coursorRow, coursorColumn
+    global row, column, coursorRow, coursorColumn, h
     
 
     if key == b'\x7f':
@@ -144,6 +153,10 @@ def handler(key, x, y):
             keywordPositions[coursorRow].pop(coursorColumn)
 
     elif key==b'\r':
+        # if row > coursorRow:
+        if row > 38:
+            if coursorRow == row:
+                h += 15
         coursorRow += 1
         row += 1
         characters.insert(coursorRow, [])
@@ -212,7 +225,6 @@ def showScreen():
     # glut_print(20 + 10*len(characters[coursorRow]), (h - 15) - (15 * (coursorRow)), GLUT_BITMAP_HELVETICA_18, "|", 0.5 , 0.5 , 0.5)
     if index > 0 and index < 40:
         glut_print(33 + 10*coursorColumn, (h - 15) - (15 * (coursorRow)), GLUT_BITMAP_HELVETICA_18, "|", 0 , 0 , 0)
-    
     elif index == 80:
         index = 0
     else:
@@ -224,7 +236,7 @@ def main():
     glutInit()
     glutInitDisplayMode(GLUT_RGBA)
     glutInitWindowSize(w, h)
-    glutInitWindowPosition(0, 0)
+    glutInitWindowPosition(560, 240)
     wind = glutCreateWindow("OpenGL Code Editor")
     glutDisplayFunc(showScreen)
     glutIdleFunc(showScreen)
