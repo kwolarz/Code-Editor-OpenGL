@@ -7,6 +7,7 @@ from OpenGL.GLU import *
 characters = []
 characters.append([])
 
+# lista w której zapisywane są pozycje słów kluczowych
 keywordPositions = []
 keywordPositions.append([])
 
@@ -29,13 +30,12 @@ def saveFile():
     global row
     file = open('file.txt', 'w+')
     for r in range(row + 1):
-        if r == row:
+        if r == row:                    # jeśli ostatnia linia nie dodawaj znaku nowej linii
             file.write(listToString(characters[r]))
         else:
             file.write(listToString(characters[r]) + '\n')
 
     file.close()
-    print('saved')
 
 
 def openFile():
@@ -52,6 +52,7 @@ def openFile():
             checkIfSyntax(listToString(characters[i]), i)
             specialCharSyntax(listToString(characters[i]), i) 
             row = i
+
         file.close()
 
 
@@ -63,28 +64,29 @@ def listToString(listOfChar):
 
     return word
 
-
+# metoda odpowaidająca za znajdowanie wielu słów kluczowych w jednym stringu
 def find_all(a_str, sub):
     start = 0
     while True:
         start = a_str.find(sub, start)
         if start == -1: return
         yield start
-        start += 1 # use start += 1 to find overlapping matches
+        start += 1
 
 
 # metoda odpowiadająca za znajdowanie słów kluczowych w danym stringu
 def checkIfSyntax(text, row):
+    keywordPositions[row].clear()
     keywords = ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield']
     startOfKeyword = None
     for keyword in keywords:
         startOfKeyword = text.find(keyword)
         if keyword in text:
             endOfKeyword = len(keyword) + startOfKeyword
-            # if (startOfKeyword == 0 or characters[row][startOfKeyword - 1] == ' ') and characters[row][endOfKeyword] == ' ':
-            for i in range(startOfKeyword, endOfKeyword):
-                if i not in keywordPositions[row]:
-                    keywordPositions[row].append(i)
+            if (startOfKeyword == 0 or characters[row][startOfKeyword - 1].isspace()) and characters[row][endOfKeyword].isspace():
+                for i in range(startOfKeyword, endOfKeyword):
+                    if i not in keywordPositions[row]:
+                        keywordPositions[row].append(i)
 
             
 
@@ -145,7 +147,8 @@ def handler(key, x, y):
                 characters.pop(coursorRow)
                 keywordPositions.pop(coursorRow)
                 row -= 1
-                coursorRow -= 1
+                if row: 
+                    coursorRow -= 1
                 coursorColumn = len(characters[coursorRow])
                 
         else:
@@ -181,8 +184,8 @@ def handler(key, x, y):
 
     print(characters)
 
-    checkIfSyntax(listToString(characters[coursorRow]), row)
-    specialCharSyntax(listToString(characters[coursorRow]), row)  
+    checkIfSyntax(listToString(characters[coursorRow]), coursorRow)
+    specialCharSyntax(listToString(characters[coursorRow]), coursorRow)  
 
     return None
 

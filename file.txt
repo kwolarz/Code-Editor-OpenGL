@@ -1,2 +1,71 @@
-gifshjgkjgkls
-ghjkfsdhgj
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+
+
+# głowna lista odpowiadająca za ilość wierszy w edytorze
+characters = []
+characters.append([])
+
+# lista w której zapisywane są pozycje słów kluczowych
+keywordPositions = []
+keywordPositions.append([])
+
+# zmienne odpowaidające za szerokość i wysokość okna
+w,h= 800, 600
+
+# aktualna liczba wierszy edytora
+row = 0
+
+# aktualna liczba kolumn w danym wierszu edytora
+column = 0
+
+# pozycja kursora - wiersze
+coursorRow = row
+
+# pozycja kursora - kolumny
+coursorColumn = column
+
+def saveFile():
+    global row
+    file = open('file.txt', 'w+')
+    for r in range(row + 1):
+        if r == row:                    # jeśli ostatnia linia nie dodawaj znaku nowej linii
+            file.write(listToString(characters[r]))
+        else:
+            file.write(listToString(characters[r]) + '\n')
+
+    file.close()
+
+
+def openFile():
+    global row
+
+    characters.clear()
+    keywordPositions.clear()
+    with open('file.txt', 'r') as file:
+        for i, line in enumerate(file):
+            characters.append([])
+            characters[i] = list(line.replace('\n', ''))
+            keywordPositions.append([])
+            # for coursorRow in range(row):
+            checkIfSyntax(listToString(characters[i]), i)
+            specialCharSyntax(listToString(characters[i]), i) 
+            row = i
+
+        file.close()
+
+
+# metoda odpoiwadająca za zamianę listy char'ów w jeden string
+def listToString(listOfChar):
+    word = ''
+    for w in listOfChar:
+        word += w
+
+    return word
+
+# metoda odpowaidająca za znajdowanie wielu słów kluczowych w jednym stringu
+def find_all(a_str, sub):
+    start = 0
+    while True:
+        start = a_str.find(sub, start)
