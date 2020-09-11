@@ -157,10 +157,13 @@ def handler(key, x, y):
         if row > 38:
             if coursorRow == row:
                 h += 15
+
         coursorRow += 1
         row += 1
         characters.insert(coursorRow, [])
         keywordPositions.insert(coursorRow, [])
+        characters[coursorRow] = characters[coursorRow - 1][coursorColumn:]
+        characters[coursorRow - 1] = characters[coursorRow - 1][:coursorColumn]
         coursorColumn = 0
 
     elif key == b'\t':
