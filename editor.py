@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+import os
 
 
 # głowna lista odpowiadająca za ilość wierszy w edytorze
@@ -42,19 +43,27 @@ def saveFile():
 def openFile():
     global row
 
-    characters.clear()
-    keywordPositions.clear()
-    with open('file.txt', 'r') as file:
-        for i, line in enumerate(file):
-            characters.append([])
-            characters[i] = list(line.replace('\n', ''))
-            keywordPositions.append([])
-            # for coursorRow in range(row):
-            checkIfSyntax(listToString(characters[i]), i)
-            specialCharSyntax(listToString(characters[i]), i) 
-            row = i
 
-        file.close()
+    if os.path.isfile('file.txt'):
+        characters.clear()
+        keywordPositions.clear()
+        with open('file.txt', 'r') as file:
+            if os.stat('file.txt').st_size == 0:
+                characters.append([])
+                keywordPositions.append([])
+            else:
+                for i, line in enumerate(file):
+                    characters.append([])
+                    characters[i] = list(line.replace('\n', ''))
+                    keywordPositions.append([])
+                    # for coursorRow in range(row):
+                    checkIfSyntax(listToString(characters[i]), i)
+                    specialCharSyntax(listToString(characters[i]), i) 
+                    row = i
+
+            file.close()
+    else:
+        file = open('file.txt', 'w+')
 
 
 # metoda odpoiwadająca za zamianę listy char'ów w jeden string
