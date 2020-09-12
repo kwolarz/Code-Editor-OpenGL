@@ -19,6 +19,7 @@ row = 0
 
 # aktualna liczba kolumn w danym wierszu edytora
 column = 0
+lastVisisbleRow = 39
 
 # pozycja kursora - wiersze
 coursorRow = row
@@ -102,19 +103,27 @@ def specialCharSyntax(text, row):
 
 # metoda odpowaidająca za obsługę klawiszy kierunkowych na klawiaturze
 def arrowHandler(key, x, y):
-    global coursorRow, row, coursorColumn, h
+    global coursorRow, row, coursorColumn, h, lastVisisbleRow
     
     if key == GLUT_KEY_UP:
         if coursorRow > 0:
             coursorRow -= 1
+            if lastVisisbleRow > 39 and coursorRow < lastVisisbleRow - 38:
+                h -= 15
+                lastVisisbleRow -= 1
             if coursorColumn > len(characters[coursorRow]):
                 coursorColumn = len(characters[coursorRow])
 
     elif key == GLUT_KEY_DOWN:
         if row > coursorRow:
-            if row > 38:
-                if coursorRow == row - 1:
+            # if row > 38:
+            #     if coursorRow == row - 1:
+            #         h += 15
+
+            if row > lastVisisbleRow:
+                if coursorRow >= lastVisisbleRow - 1:
                     h += 15
+                    lastVisisbleRow += 1
 
             coursorRow += 1
             if coursorColumn > len(characters[coursorRow]):
@@ -129,14 +138,14 @@ def arrowHandler(key, x, y):
         if len(characters[coursorRow]) > coursorColumn:
             coursorColumn += 1
 
-    print('row = ', row, 'coursor = ', coursorRow)
+    print('row = ', row, 'coursor = ', coursorRow, 'last visible = ', lastVisisbleRow)
     
     return None
 
 
 # metoda odpowiadająca za obsługę klawiatury
 def handler(key, x, y):
-    global row, column, coursorRow, coursorColumn, h
+    global row, column, coursorRow, coursorColumn, h, lastVisisbleRow
     
 
     if key == b'\x7f':
@@ -157,9 +166,10 @@ def handler(key, x, y):
 
     elif key==b'\r':
         # if row > coursorRow:
-        if row > 38:
+        if row > lastVisisbleRow - 1:
             if coursorRow == row:
                 h += 15
+                lastVisisbleRow += 1
 
         coursorRow += 1
         row += 1
